@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
-    <div>
+    <>
+    {/* <div className="pt-20"> { padding to avoid navbar overlap } */}
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-20 px-4">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to QuizMaster</h1>
@@ -36,7 +37,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 
