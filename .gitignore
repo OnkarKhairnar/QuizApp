@@ -6,3 +6,4 @@ npm-debug.log
 # Build
 frontend/build
 backend/node_modules
+frontend/node_modules
