@@ -1,5 +1,6 @@
-// src/pages/Register.js
+// src/pages/Register.jsx
 import React, { useState } from "react";
+import axios from "axios";  // 👈 added axios
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const Register = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState(""); // 👈 to show backend response
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,41 +20,32 @@ const Register = () => {
 
   const validate = () => {
     let newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
+    if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Invalid email format";
     }
-
-    if (!formData.age) {
-      newErrors.age = "Age is required";
-    } else if (formData.age < 1) {
-      newErrors.age = "Enter a valid age";
-    }
-
-    if (!formData.gender) {
-      newErrors.gender = "Please select a gender";
-    }
-
-    // Skipping password validation as you requested
-
+    if (!formData.age) newErrors.age = "Age is required";
+    if (!formData.gender) newErrors.gender = "Please select a gender";
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
       setErrors({});
-      alert("Registration Successful ✅");
-      console.log("Form Data Submitted:", formData);
+      try {
+        // 👇 Call backend API
+        const res = await axios.post("http://localhost:5000/api/auth/register", formData);
+        setMessage(res.data.message); // show backend success message
+      } catch (error) {
+        console.error(error);
+        setMessage(error.response?.data?.message || "Registration failed ❌");
+      }
     }
   };
 
@@ -62,6 +55,9 @@ const Register = () => {
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Create Account
         </h2>
+        {message && (
+          <p className="text-center text-sm mb-4 text-green-600">{message}</p>
+        )}
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Name */}
           <div>
@@ -71,12 +67,9 @@ const Register = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your name"
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg"
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
 
           {/* Email */}
@@ -87,12 +80,9 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
           </div>
 
           {/* Age */}
@@ -103,8 +93,7 @@ const Register = () => {
               name="age"
               value={formData.age}
               onChange={handleChange}
-              placeholder="Enter your age"
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg"
             />
             {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
           </div>
@@ -116,19 +105,17 @@ const Register = () => {
               name="gender"
               value={formData.gender}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-            {errors.gender && (
-              <p className="text-red-500 text-sm">{errors.gender}</p>
-            )}
+            {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
           </div>
 
-          {/* Password (no validation, just input) */}
+          {/* Password */}
           <div>
             <label className="block text-gray-700 mb-1">Password</label>
             <input
@@ -136,8 +123,7 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
 
