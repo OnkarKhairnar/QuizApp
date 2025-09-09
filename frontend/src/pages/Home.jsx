@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 const Home = () => {
   return (
     <>
+
+    
     {/* <div className="pt-20"> { padding to avoid navbar overlap } */}
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-20 px-4">
